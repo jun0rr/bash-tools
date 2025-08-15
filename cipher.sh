@@ -42,7 +42,7 @@ function padLeft() {
         echo "$text"
 }
 
-VERSION="202410.02"
+VERSION="202410.03"
 
 function printHelp()  {
 	padCenter 38 '-'
@@ -51,21 +51,23 @@ function printHelp()  {
 	padCenter 38 ' ' "Version: $VERSION"
 	padCenter 38 ' ' "Author: F6036477 - Juno"
 	padCenter 38 '-'
-	line="Usage: cr2.sh <-e|-d> <-k|-p <arg>> [file]"
+	line="Usage: cr2.sh <-e|-d|-g> <-k|-p <pass>> [file]"
 	padLeft $((${#line}+2)) ' ' "$line"
 	line="Options:"
 	padLeft $((${#line}+2)) ' ' "$line"
-	line="-e/--enc ...: Ecrypt file/stdin"
-	padLeft $((${#line}+4)) ' ' "$line"
 	line="-d/--dec ...: Decrypt file/stdin"
 	padLeft $((${#line}+4)) ' ' "$line"
-	line="-p/--pass ..: Password"
+	line="-e/--enc ...: Ecrypt file/stdin"
+	padLeft $((${#line}+4)) ' ' "$line"
+	line="-g/--gen ...: Generate RSA key pair"
+	padLeft $((${#line}+4)) ' ' "$line"
+	line="-h/--help ..: Print this help text"
 	padLeft $((${#line}+4)) ' ' "$line"
 	line="-k/--key ...: Private/Public key"
 	padLeft $((${#line}+4)) ' ' "$line"
-	line="-v/--version: Print CR2 version"
+	line="-p/--pass ..: Password"
 	padLeft $((${#line}+4)) ' ' "$line"
-	line="-h/--help ..: Print this help text"
+	line="-v/--version: Print CR2 version"
 	padLeft $((${#line}+4)) ' ' "$line"
 	echo ""
 }
@@ -74,6 +76,7 @@ opts=($@)
 olen=${#opts[@]}
 OPTE=0
 OPTD=0
+OPTG=0
 OPTP=0
 OPTK=0
 ARGP=""
@@ -87,6 +90,9 @@ for ((i=0; i<olen; i++)); do
 			;;
 		-d | --dec)
 			OPTD=1
+			;;
+		-g | --gen)
+			OPTG=1
 			;;
 		-p | --pass)
 			OPTP=1
@@ -132,13 +138,13 @@ if [ -z "$INFILE" -a "$ARGK" != ${opts[$((olen-1))]} -a -e ${opts[$((olen-1))]} 
 	INFILE=${opts[$((olen-1))]}
 fi
 
-if [ $((OPTE+OPTD)) -lt 1 ]; then
+if [ $((OPTE+OPTD+OPTG)) -lt 1 ]; then
 	printHelp
-	echo "[ERROR] Missing mandatory option: <-e|-d>"
+	echo "[ERROR] Missing mandatory option: <-e|-d|-g>"
 	exit 4
-elif [ $((OPTE+OPTD)) -gt 1 ]; then
+elif [ $((OPTE+OPTD+OPTG)) -gt 1 ]; then
 	printHelp
-	echo "[ERROR] Multiple exclusive options present: <-e|-d>"
+	echo "[ERROR] Multiple exclusive options present: <-e|-d|-g>"
 	exit 5
 elif [ $OPTE -eq 1 -a $((OPTK+OPTP)) -lt 1 ]; then
 	printHelp
@@ -159,22 +165,53 @@ elif [ $OPTK -eq 1 -a ! -e "$ARGK" ]; then
 fi
 
 TMPFILE=0
-if [ -z "$INFILE" -o ! -e "$INFILE" ]; then
-	TMPFILE=1
-	INFILE="/tmp/$(uuidgen | base64 | sed 's/[=|\/]//g')"
-	cat - > $INFILE
+if [ $OPTG -eq 0 ]; then
+	if [ -z "$INFILE" -o ! -e "$INFILE" ]; then
+		TMPFILE=1
+		INFILE="/tmp/$(uuidgen | base64 | sed 's/[=|\/]//g')"
+		cat - > $INFILE
+	fi
+	if [ ! -e $INFILE ]; then
+		printHelp
+		echo "[ERROR] File does not exists: $INFILE"
+		exit 2
+	fi
 fi
 
-if [ ! -e $INFILE ]; then
-	printHelp
-	echo "[ERROR] File does not exists: $INFILE"
-	exit 2
-fi
+function genKeyPair() {
+	echo "[INFO] Generating RSA key pair..."
+	read -p "  RSA key bits <1024|2048|4096> (2048): " BITS
+	read -p "  Private key file (pkey.pem): " PKEY
+	read -p "  Public key file (pubkey.pem): " PUBKEY
+	read -p "  Enter key password: " -s PASS && echo ''
+	if [ -z "$BITS" ]; then
+		BITS=2048
+	elif [ ! $BITS -eq 1024 -o ! $BITS -eq 2048 -o ! $BITS -eq 4096 ]; then
+		echo -e "\n[ERROR] Invalid RSA key bits: $BITS"
+		exit 10
+	fi
+	if [ -z "$PASS" ]; then
+		echo -e "\n[ERROR] Password can not be empty!"
+		exit 11
+	elif [ ${#PASS} -lt 4 ]; then
+		echo -e "\n[ERROR] Password is too short (min 4 chars)!"
+		exit 12
+	fi
+	if [ -z "$PKEY" ]; then
+		PKEY="./pkey.pem"
+	fi
+	if [ -z "$PUBKEY" ]; then
+		PUBKEY="./pubkey.pem"
+	fi
+	openssl genpkey -algorithm RSA -outform PEM -pass "pass:$PASS" -pkeyopt "rsa_keygen_bits:$BITS" -out "$PKEY" -outpubkey "$PUBKEY" -quiet
+	echo -e "\n[INFO] Key pair generated successfully!"
+	ls -lh $PKEY $PUBKEY
+}
 
 function encryptKeyLT224() {
 	outfile="/tmp/$(uuidgen | base64 | sed 's/[=|\/]//g')"
 	echo "-1" | base64 > $outfile
-	cat $INFILE | openssl rsautl -encrypt -inkey $ARGK -pubin | base64 >> $outfile
+	cat $INFILE | openssl pkeyutl -encrypt -inkey $ARGK -pubin | base64 >> $outfile
 	cat $outfile
 	rm $outfile
 }
@@ -182,11 +219,11 @@ function encryptKeyLT224() {
 function encryptKeyGT224() {
 	simkey=$(openssl rand -base64 64)
 	simkey=$(echo $simkey | sed 's/ /_/g')
-	enckey=$(echo $simkey | openssl rsautl -encrypt -inkey $ARGK -pubin | base64)
+	enckey=$(echo $simkey | openssl pkeyutl -encrypt -inkey $ARGK -pubin | base64)
 	outfile="/tmp/$(uuidgen | base64 | sed 's/[=|\/]//g')"
 	echo ${#enckey} | base64 > $outfile
 	echo $enckey | sed 's/ /\n/g' >> $outfile
-	cat $INFILE | openssl enc -aes-256-cbc -salt -pass "pass:$simkey" | base64 >> $outfile
+	cat $INFILE | openssl enc -aes-256-cbc -salt -pbkdf2 -pass "pass:$simkey" | base64 >> $outfile
 	cat $outfile
 	rm $outfile
 }
@@ -208,7 +245,7 @@ function encryptPass() {
 # {1} skip bytes
 function decryptKeyLT224() {
 	skip=$1
-	cat $INFILE | tail -c+$((skip+1)) | base64 -d | openssl rsautl -decrypt -inkey $ARGK -passin "pass:$ARGP"
+	cat $INFILE | tail -c+$((skip+1)) | base64 -d | openssl pkeyutl -decrypt -inkey $ARGK -passin "pass:$ARGP"
 }
 
 # {1} Header bytes
@@ -217,8 +254,8 @@ function decryptKeyGT224() {
 	hdbytes=$1
 	keysize=$2
 	enckey=$(head -c $hdbytes $INFILE | tail -c $keysize)
-	deckey=$(echo $enckey | sed 's/ /\n/g' | base64 -d | openssl rsautl -decrypt -inkey $ARGK -passin "pass:$ARGP")
-	cat $INFILE | tail -c+$((hdbytes+2)) | base64 -d | openssl enc -d -aes-256-cbc -pass "pass:$deckey"
+	deckey=$(echo $enckey | sed 's/ /\n/g' | base64 -d | openssl pkeyutl -decrypt -inkey $ARGK -passin "pass:$ARGP")
+	cat $INFILE | tail -c+$((hdbytes+2)) | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$deckey"
 }
 
 function decryptKey() {
@@ -237,7 +274,9 @@ function decryptPass() {
 	cat $INFILE | base64 -d | openssl enc -d -aes-256-cbc -pass "pass:$ARGP"
 }
 
-if [ $OPTE -eq 1 -a $OPTK -eq 1 ]; then
+if [ $OPTG -eq 1 ]; then
+	genKeyPair
+elif [ $OPTE -eq 1 -a $OPTK -eq 1 ]; then
 	encryptKey
 elif [ $OPTE -eq 1 -a $OPTP -eq 1 ]; then
 	encryptPass
