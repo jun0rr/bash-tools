@@ -217,8 +217,7 @@ function encryptKeyLT224() {
 }
 
 function encryptKeyGT224() {
-	simkey=$(openssl rand -base64 64)
-	simkey=$(echo $simkey | sed 's/ /_/g')
+	simkey=$(openssl rand -hex 64)
 	enckey=$(echo $simkey | openssl pkeyutl -encrypt -inkey $ARGK -pubin | base64)
 	outfile="/tmp/$(uuidgen | base64 | sed 's/[=|\/]//g')"
 	echo ${#enckey} | base64 > $outfile
