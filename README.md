@@ -11,6 +11,7 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 **Features**:
 - Password-based AES-256-CBC encryption
 - RSA public/private key encryption
+- RSA key pair generation (openssl genpkey)
 - Automatic hybrid encryption for large files (AES + RSA)
 - Support for files and stdin input
 
@@ -21,8 +22,21 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 ./cipher.sh -d -p "mypassword" encrypted.txt
 
 # RSA key encryption
-./cipher.sh -e -k public.key file.txt > encrypted.txt
-./cipher.sh -d -k private.key -p "key_password" encrypted.txt
+./cipher.sh -e -k public.pem file.txt > encrypted.txt
+./cipher.sh -d -k private.pem -p "keypass" encrypted.txt
+
+# RSA key pair generation
+./cipher.sh -g
+# Output
+[INFO] Generating RSA key pair...
+  RSA key bits <1024|2048|4096> (2048):
+  Private key file (pkey.pem):
+  Public key file (pubkey.pem):
+  Enter key password:
+
+[INFO] Key pair generated successfully!
+-rw------- 1 root root 1.7K Aug 19 12:22 ./pkey.pem
+-rw------- 1 root root  451 Aug 19 12:22 ./pubkey.pem
 ```
 
 ### 🫥 hide.sh - Script Obfuscation Tool
@@ -40,13 +54,21 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 ./hide.sh script.sh
 
 # Advanced obfuscation with encryption
-./hide.sh -e -n 5 -o secure_script.sh deploy.sh
+./hide.sh -e -n 5 -o obfuscated.sh deploy.sh
 
 # Unhide obfuscated content
 ./hide.sh -u obfuscated.sh
 
 # Get obfuscation info
 ./hide.sh -i obfuscated.sh
+# Output example
+--------------------------------------
+       Obfuscated Content Info
+--------------------------------------
+    Iterations ...: 5
+    Encryption ...: aes-256-cbc
+    Size Diff ....: > 23.0%
+--------------------------------------
 ```
 
 ### 🔑 pwg.sh - Password Generator
@@ -61,12 +83,16 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 **Usage**:
 ```bash
 # Generate 12-character password (default: letters + numbers + symbols)
-./pwg.sh 12
+./pwg.sh 12             # Output: 3+pJ9.sP7{eE
 
-# Custom character sets
-./pwg.sh -l -u -n 16    # Letters and numbers only
-./pwg.sh -n 6           # Numbers only (PIN)
-./pwg.sh -s -s -s 20    # High symbol density
+# Letters and numbers only
+./pwg.sh -l -u -n 16    # Output: F2bE0pL2rM1bN4kL
+
+# Numbers only (PIN)
+./pwg.sh -n 6           # Output: 258934
+
+# High symbol density
+./pwg.sh -a -s -s 20    # Output: 2%%hH4/!pQ5!:tK5..qA
 ```
 
 ### 📏 size.sh - File Size Converter
@@ -119,19 +145,6 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 - **Cryptographic security**: Suitable for password generation
 - **Uniform distribution**: Balanced character selection
 
-## Installation & Setup
-
-1. Clone or download the scripts
-2. Make scripts executable:
-   ```bash
-   chmod +x *.sh
-   ```
-3. For RSA encryption, generate key pairs:
-   ```bash
-   openssl genrsa -out private.key 2048
-   openssl rsa -in private.key -pubout -out public.key
-   ```
-
 ## Dependencies
 
 - **OpenSSL**: Required for encryption operations
@@ -172,7 +185,7 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 
 ## Author
 
-**F6036477 - Juno**
+**Juno Roesler - juno.rr@gmail.com**
 
 ## License
 
