@@ -9,14 +9,33 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 **Purpose**: AES-256-CBC encryption/decryption with support for both password-based and RSA key-based encryption.
 
 **Features**:
+- Based on OpenSSL best pratices
 - Password-based AES-256-CBC encryption
+- Automatic hybrid encryption for large files (AES + RSA)
 - RSA public/private key encryption
 - RSA key pair generation (openssl genpkey)
-- Automatic hybrid encryption for large files (AES + RSA)
 - Support for files and stdin input
 
 **Usage**:
 ```bash
+./cipher.sh -h
+# Output:
+--------------------------------------
+Cipher.sh - Encryption/Decryption tool
+        RSA/AES/CBC Algorithms
+          Version: 202410.04
+         Author: Juno Roesler
+--------------------------------------
+  Usage: cipher.sh <-e|-d|-g> <-k|-p <pass>> [file]
+  Options:
+    -d/--dec ...: Decrypt file/stdin
+    -e/--enc ...: Ecrypt file/stdin
+    -g/--gen ...: Generate RSA key pair
+    -h/--help ..: Print this help text
+    -k/--key ...: Private/Public key
+    -p/--pass ..: Password
+    -v/--version: Print Cipher version
+
 # Password encryption
 ./cipher.sh -e -p "mypassword" file.txt > encrypted.txt
 ./cipher.sh -d -p "mypassword" encrypted.txt

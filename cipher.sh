@@ -5,24 +5,24 @@
 # {2} Padding char
 # {3} Text
 function padCenter() {
-        lineSize=$1
-        char="$2"
-        text="$3"
-        textLen=${#text}
-        size=$(($lineSize-$textLen))
-        sizeL=$(($size/2))
-        sizeR=$sizeL
-        if [ $(($sizeL*2)) -lt $size ]; then
-                sizeR=$(($sizeL+1))
-        fi
-        for ((i=0; i<sizeL; i++)); do
-                echo -n "$char"
-        done
-        echo -n "$text"
-        for ((i=0; i<sizeR; i++)); do
-                echo -n "$char"
-        done
-        echo ""
+	lineSize=$1
+	char="$2"
+	text="$3"
+	textLen=${#text}
+	size=$(($lineSize-$textLen))
+	sizeL=$(($size/2))
+	sizeR=$sizeL
+	if [ $(($sizeL*2)) -lt $size ]; then
+					sizeR=$(($sizeL+1))
+	fi
+	for ((i=0; i<sizeL; i++)); do
+					echo -n "$char"
+	done
+	echo -n "$text"
+	for ((i=0; i<sizeR; i++)); do
+					echo -n "$char"
+	done
+	echo ""
 }
 
 
@@ -31,27 +31,27 @@ function padCenter() {
 # {2} Padding char
 # {3} Text
 function padLeft() {
-        lineSize=$1
-        char="$2"
-        text="$3"
-        textLen=${#text}
-        size=$(($lineSize-$textLen))
-        for ((i=0; i<size; i++)); do
-                echo -n "$char"
-        done
-        echo "$text"
+	lineSize=$1
+	char="$2"
+	text="$3"
+	textLen=${#text}
+	size=$(($lineSize-$textLen))
+	for ((i=0; i<size; i++)); do
+					echo -n "$char"
+	done
+	echo "$text"
 }
 
-VERSION="202410.03"
+VERSION="202410.04"
 
 function printHelp()  {
 	padCenter 38 '-'
-	padCenter 38 ' ' "CR2 - Encryption/Decryption tool"
-	padCenter 38 ' ' "AES/CBC 256 Algorithm"
+	padCenter 38 ' ' "Cipher.sh - Encryption/Decryption tool"
+	padCenter 38 ' ' "RSA/AES/CBC Algorithms"
 	padCenter 38 ' ' "Version: $VERSION"
-	padCenter 38 ' ' "Author: F6036477 - Juno"
+	padCenter 38 ' ' "Author: Juno Roesler"
 	padCenter 38 '-'
-	line="Usage: cr2.sh <-e|-d|-g> <-k|-p <pass>> [file]"
+	line="Usage: cipher.sh <-e|-d|-g> <-k|-p <pass>> [file]"
 	padLeft $((${#line}+2)) ' ' "$line"
 	line="Options:"
 	padLeft $((${#line}+2)) ' ' "$line"
@@ -67,7 +67,7 @@ function printHelp()  {
 	padLeft $((${#line}+4)) ' ' "$line"
 	line="-p/--pass ..: Password"
 	padLeft $((${#line}+4)) ' ' "$line"
-	line="-v/--version: Print CR2 version"
+	line="-v/--version: Print Cipher version"
 	padLeft $((${#line}+4)) ' ' "$line"
 	echo ""
 }
