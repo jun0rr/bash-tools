@@ -69,6 +69,25 @@ Cipher.sh - Encryption/Decryption tool
 
 **Usage**:
 ```bash
+# Show help
+./hide.sh -h
+------------------------------------
+  HideSH - Bash Script Obfuscation
+         Version: 202411.07
+      Author: F6036477 - Juno
+------------------------------------
+ Usage: hide.sh [-h] [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]
+   When [input] is not provided, content is readed from stdin
+ Options:
+   -e/--encrypt ...: Encrypt input script with random password
+   -h/--help ......: Print this help text
+   -i/--info ......: Print info of an obfuscated cotent
+   -n/--num .......: Number of iterations (default=1)
+   -o/--out .......: Output file (default stdout)
+   -s/--src .......: Call 'source' on script instead of executing
+   -u/--unhide ....: Unhide obfuscated content
+   -v/--version ...: Print version
+
 # Basic obfuscation
 ./hide.sh script.sh
 
@@ -81,13 +100,13 @@ Cipher.sh - Encryption/Decryption tool
 # Get obfuscation info
 ./hide.sh -i obfuscated.sh
 # Output example
---------------------------------------
-       Obfuscated Content Info
---------------------------------------
+------------------------------------
+      Obfuscated Content Info
+------------------------------------
     Iterations ...: 5
     Encryption ...: aes-256-cbc
-    Size Diff ....: > 23.0%
---------------------------------------
+    Size Diff ....: > 11.9%
+------------------------------------
 ```
 
 ### 🔑 pwg.sh - Password Generator
@@ -96,11 +115,33 @@ Cipher.sh - Encryption/Decryption tool
 **Features**:
 - Uses `/dev/urandom` for true randomness
 - Configurable character types (lowercase, uppercase, numbers, symbols)
+- Custom symbols characters
 - Proportional character distribution
 - Flexible password length
 
 **Usage**:
 ```bash
+# Show help
+./pwg.sh -h
+---------------------------------
+ PWG - Random Password Generator
+        Version: 202504.03
+       Author: Juno Roesler
+---------------------------------
+ Usage: pwg [-a] [-h] [-l] [-m <symbols>] [-n] [-s] [-S] [-u] [-w] <length>
+   Each option can be provided multiple times to increase occurrence
+   When no option is provided, the default is: '-l -n -s -u'
+ Options:
+   -a: Use letters and numbers in password;
+   -h: Print this help text;
+   -l: Use lower case letters in password;
+   -m <symbols>: Use custom set of symbols in password;
+   -n: Use numbers in password;
+   -s: Use symbols in password;
+   -S: Show default symbols character set;
+   -u: Use upper case letters in password;
+   -w: Use lower case and upper case letters in password;
+
 # Generate 12-character password (default: letters + numbers + symbols)
 ./pwg.sh 12             # Output: 3+pJ9.sP7{eE
 
@@ -112,6 +153,14 @@ Cipher.sh - Encryption/Decryption tool
 
 # High symbol density
 ./pwg.sh -a -s -s 20    # Output: 2%%hH4/!pQ5!:tK5..qA
+
+# Custom symbols characters
+./pwg.sh -m '@#$' 12    # Output: 4$cM0@pQ5#qY
+
+# Show default symbols
+./pwg.sh -S
+Default Symbols Character Set:
+ ! @ # $ % & * ( ) - = + [ ] { } | < > . , ; : / ?
 ```
 
 ### 📏 size.sh - File Size Converter

@@ -1,24 +1,26 @@
 #!/bin/bash
 
-VERSION="202504.01"
+VERSION="202504.03"
 
 function printHelp() {
-	echo "-----------------------------------"
-	echo "  PWG - Random Password Generator  "
-	echo "         Version: $VERSION         "
-	echo "          Author: F6036477          "
-	echo "-----------------------------------"
-	echo "  Usage: pwg [-a] [-h] [-l] [-n] [-s] [-u] [-w] <length>"
-	echo "    Each option can be provided multiple times to increase occurrence"
-	echo "    When no option is provided, the default is: '-l -n -s -u'"
-	echo "  Options:"
-	echo "    -a: Use letters and numbers in password;"
-	echo "    -h: Print this help text;"
-	echo "    -l: Use lower case letters in password;"
-	echo "    -n: Use numbers in password;"
-	echo "    -s: Use symbols in password;"
-	echo "    -u: Use upper case letters in password;"
-	echo "    -w: Use lower case and upper case letters in password;"
+	echo "---------------------------------"
+	echo " PWG - Random Password Generator "
+	echo "        Version: $VERSION        "
+	echo "       Author: Juno Roesler      "
+	echo "---------------------------------"
+	echo " Usage: pwg [-a] [-h] [-l] [-m <symbols>] [-n] [-s] [-S] [-u] [-w] <length>"
+	echo "   Each option can be provided multiple times to increase occurrence"
+	echo "   When no option is provided, the default is: '-l -n -s -u'"
+	echo " Options:"
+	echo "   -a: Use letters and numbers in password;"
+	echo "   -h: Print this help text;"
+	echo "   -l: Use lower case letters in password;"
+	echo "   -m <symbols>: Use custom set of symbols in password;"
+	echo "   -n: Use numbers in password;"
+	echo "   -s: Use symbols in password;"
+	echo "   -S: Show default symbols character set;"
+	echo "   -u: Use upper case letters in password;"
+	echo "   -w: Use lower case and upper case letters in password;"
 	echo " "
 }
 
@@ -64,7 +66,7 @@ len=0
 
 for ((i=0; i<${#opts[@]}; i++)); do
 	opt=${opts[$i]}
-	if [[ $opt =~ \-[alnsuw]{2,6} ]]; then
+	if [[ $opt =~ \-[almnsSuw]{2,8} ]]; then
 		opts[$i]="-"${opt:1:1}
 		ilast=$((${#opts[@]}-1))
 		last=${opts[$ilast]}
@@ -75,10 +77,20 @@ for ((i=0; i<${#opts[@]}; i++)); do
 		opts+=($last)
 	fi
 	case ${opts[$i]} in
+		"-S") 
+			echo "Default Symbols Character Set:"
+			echo " ${SYMBOLS[@]}"
+			exit 0
+			;;
 		"-a") src+=('l' 'u' 'n');;
 		"-h") printHelp
 			exit 0;;
 		"-l") src+=('l');;
+		"-m") 
+			((i++))
+			SYMBOLS=()
+			SYMBOLS=$(echo "${opts[$i]}" | grep -o .)
+			;; 
 		"-n") src+=('n');;
 		"-s") src+=('s');;
 		"-u") src+=('u');;

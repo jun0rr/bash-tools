@@ -43,36 +43,36 @@ function padLeft() {
 }
 
 
-VERSION="202411.06"
+VERSION="202411.07"
 
 function printHelp() {
-	padCenter 38 '-'
-	padCenter 38 ' ' 'HideSH - Bash Script Obfuscation'
-	padCenter 38 ' ' "Version: $VERSION"
-	padCenter 38 ' ' 'Author: F6036477 - Juno'
-	padCenter 38 '-'
+	padCenter 36 '-'
+	padCenter 36 ' ' 'HideSH - Bash Script Obfuscation'
+	padCenter 36 ' ' "Version: $VERSION"
+	padCenter 36 ' ' 'Author: F6036477 - Juno'
+	padCenter 36 '-'
 	line="Usage: hide.sh [-h] [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]"
-        padLeft $((${#line}+2)) ' ' "$line"
+    padLeft $((${#line}+1)) ' ' "$line"
 	line="When [input] is not provided, content is readed from stdin"
-        padLeft $((${#line}+4)) ' ' "$line"
+    padLeft $((${#line}+3)) ' ' "$line"
 	line="Options:"
-        padLeft $((${#line}+2)) ' ' "$line"
-        line="-e/--encrypt ...: Encrypt input script with random password"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-h/--help ......: Print this help text"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-i/--info ......: Print info of an obfuscated cotent"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-n/--num .......: Number of iterations (default=1)"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-o/--out .......: Output file (default stdout)"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-s/--src .......: Call 'source' on script instead of executing"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-u/--unhide ....: Unhide obfuscated content"
-        padLeft $((${#line}+4)) ' ' "$line"
-        line="-v/--version ...: Print version"
-        padLeft $((${#line}+4)) ' ' "$line"
+    padLeft $((${#line}+1)) ' ' "$line"
+    line="-e/--encrypt ...: Encrypt input script with random password"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-h/--help ......: Print this help text"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-i/--info ......: Print info of an obfuscated cotent"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-n/--num .......: Number of iterations (default=1)"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-o/--out .......: Output file (default stdout)"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-s/--src .......: Call 'source' on script instead of executing"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-u/--unhide ....: Unhide obfuscated content"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-v/--version ...: Print version"
+    padLeft $((${#line}+3)) ' ' "$line"
 	echo ""
 }
 
@@ -281,9 +281,9 @@ if [ $OPTO -eq 1 ]; then
 	fi
 	echo $out | sed 's/_NL_/\n/g' >> $ARGO
 elif [ $OPTI -eq 1 ]; then
-	padCenter 38 '-'
-	padCenter 38 ' ' 'Obfuscated Content Info'
-	padCenter 38 '-'
+	padCenter 36 '-'
+	padCenter 36 ' ' 'Obfuscated Content Info'
+	padCenter 36 '-'
 	line="Iterations ...: $INFITE"
         padLeft $((${#line}+4)) ' ' "$line"
 	if [ $INFENC -eq 1 ]; then
@@ -292,7 +292,7 @@ elif [ $OPTI -eq 1 ]; then
 		INFENC="No"
 	fi
 	line="Encryption ...: $INFENC"
-        padLeft $((${#line}+4)) ' ' "$line"
+    padLeft $((${#line}+4)) ' ' "$line"
 	if [ $INFILEN -le $INFOLEN ]; then
 		size=$((INFOLEN-INFILEN))
 		size=$((size*100))
@@ -305,7 +305,7 @@ elif [ $OPTI -eq 1 ]; then
 		line="Size Diff ....: > $size%"
 	fi
         padLeft $((${#line}+4)) ' ' "$line"
-	padCenter 38 '-'
+	padCenter 36 '-'
 else
 	echo $out | sed 's/_NL_/\n/g'
 fi
