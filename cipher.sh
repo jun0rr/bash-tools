@@ -42,33 +42,33 @@ function padLeft() {
 	echo "$text"
 }
 
-VERSION="202410.04"
+VERSION="202410.05"
 
 function printHelp()  {
-	padCenter 38 '-'
-	padCenter 38 ' ' "Cipher.sh - Encryption/Decryption tool"
-	padCenter 38 ' ' "RSA/AES/CBC Algorithms"
-	padCenter 38 ' ' "Version: $VERSION"
-	padCenter 38 ' ' "Author: Juno Roesler"
-	padCenter 38 '-'
+	padCenter 40 '-'
+	padCenter 40 ' ' "Cipher.sh - Encryption/Decryption tool"
+	padCenter 40 ' ' "RSA/AES/CBC Algorithms"
+	padCenter 40 ' ' "Version: $VERSION"
+	padCenter 40 ' ' "Author: Juno Roesler"
+	padCenter 40 '-'
 	line="cipher.sh [-h | -g] | (-e <-k | -p <pass>> | -d [-k] -p <pass>) [file]"
-	padLeft $((${#line}+2)) ' ' "$line"
+	padLeft $((${#line}+1)) ' ' "$line"
 	line="Options:"
-	padLeft $((${#line}+2)) ' ' "$line"
-	line="-d/--dec ...: Decrypt file/stdin"
-	padLeft $((${#line}+4)) ' ' "$line"
-	line="-e/--enc ...: Ecrypt file/stdin"
-	padLeft $((${#line}+4)) ' ' "$line"
-	line="-g/--gen ...: Generate RSA key pair"
-	padLeft $((${#line}+4)) ' ' "$line"
+	padLeft $((${#line}+1)) ' ' "$line"
+	line="-d/--dec ...: Decrypt file or stdin. Requires -p <pass>, optionally -k."
+	padLeft $((${#line}+3)) ' ' "$line"
+	line="-e/--enc ...: Encrypt file or stdin. Requires either -k or -p <pass>."
+	padLeft $((${#line}+3)) ' ' "$line"
+	line="-g/--gen ...: Generate RSA key pair. Cannot be combined with other options."
+	padLeft $((${#line}+3)) ' ' "$line"
 	line="-h/--help ..: Print this help text"
-	padLeft $((${#line}+4)) ' ' "$line"
-	line="-k/--key ...: Private/Public key"
-	padLeft $((${#line}+4)) ' ' "$line"
-	line="-p/--pass ..: Password"
-	padLeft $((${#line}+4)) ' ' "$line"
+	padLeft $((${#line}+3)) ' ' "$line"
+	line="-k/--key ...: Specify RSA private/public key file."
+	padLeft $((${#line}+3)) ' ' "$line"
+	line="-p/--pass ..: Specify password for encryption/decryption."
+	padLeft $((${#line}+3)) ' ' "$line"
 	line="-v/--version: Print Cipher version"
-	padLeft $((${#line}+4)) ' ' "$line"
+	padLeft $((${#line}+3)) ' ' "$line"
 	echo ""
 }
 

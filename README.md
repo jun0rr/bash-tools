@@ -20,21 +20,21 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 ```bash
 ./cipher.sh -h
 # Output:
---------------------------------------
-Cipher.sh - Encryption/Decryption tool
-        RSA/AES/CBC Algorithms
-          Version: 202410.04
-         Author: Juno Roesler
---------------------------------------
-  Usage: cipher.sh [-h | -g] | (-e <-k | -p <pass>> | -d [-k] -p <pass>) [file]
-  Options:
-    -d/--dec ...: Decrypt file/stdin
-    -e/--enc ...: Ecrypt file/stdin
-    -g/--gen ...: Generate RSA key pair
-    -h/--help ..: Print this help text
-    -k/--key ...: Private/Public key
-    -p/--pass ..: Password
-    -v/--version: Print Cipher version
+----------------------------------------
+ Cipher.sh - Encryption/Decryption tool
+         RSA/AES/CBC Algorithms
+           Version: 202410.05
+          Author: Juno Roesler
+----------------------------------------
+ Usage: cipher.sh [-h | -v | -g] | (-e <-k | -p <pass>> | -d [-k] -p <pass>) [file]
+ Options:
+   -d/--dec ...: Decrypt file or stdin. Requires -p <pass>, optionally -k.
+   -e/--enc ...: Encrypt file or stdin. Requires either -k or -p <pass>.
+   -g/--gen ...: Generate RSA key pair. Cannot be combined with other options.
+   -h/--help ..: Print this help text.
+   -k/--key ...: Specify RSA private/public key file.
+   -p/--pass ..: Specify password for encryption/decryption.
+   -v/--version: Print Cipher version
 
 # Password encryption
 ./cipher.sh -e -p "mypassword" file.txt > encrypted.txt
@@ -73,20 +73,20 @@ Cipher.sh - Encryption/Decryption tool
 ./hide.sh -h
 ------------------------------------
   HideSH - Bash Script Obfuscation
-         Version: 202411.07
+         Version: 202411.08
         Author: Juno Roesler
 ------------------------------------
  Usage: hide.sh [-h | -v] | [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]
-   When [input] is not provided, content is read from stdin
+   When [input] is not provided, content is read from stdin.
  Options:
-   -e/--encrypt ...: Encrypt input script with random password
-   -h/--help ......: Print this help text
-   -i/--info ......: Print info of obfuscated content
-   -n/--num .......: Number of iterations (default = 1)
-   -o/--out .......: Output file (default = stdout)
-   -s/--src .......: Call 'source' on script instead of executing
-   -u/--unhide ....: Unhide obfuscated content
-   -v/--version ...: Print version
+   -e/--encrypt ...: Encrypt input script with random password.
+   -h/--help ......: Print this help text.
+   -i/--info ......: Print info of obfuscated content.
+   -n/--num .......: Number of iterations (default = 1).
+   -o/--out .......: Output file (default = stdout).
+   -s/--src .......: Call 'source' on script instead of executing.
+   -u/--unhide ....: Unhide obfuscated content.
+   -v/--version ...: Print version.
 
 # Basic obfuscation
 ./hide.sh script.sh
@@ -125,22 +125,22 @@ Cipher.sh - Encryption/Decryption tool
 ./pwg.sh -h
 ---------------------------------
  PWG - Random Password Generator
-        Version: 202504.03
+        Version: 202504.04
        Author: Juno Roesler
 ---------------------------------
  Usage: pwg [-h | -S] | ([-a] [-l] [-m <symbols>] [-n] [-s] [-u] [-w]) <length>
-   Each option can be provided multiple times to increase occurrence
+   Each option can be repeated to increase the occurrence of its character type.
    When no option is provided, the default is: '-l -n -s -u'
  Options:
-   -a: Use letters and numbers in password;
-   -h: Print this help text;
-   -l: Use lower case letters in password;
-   -m <symbols>: Use custom set of symbols in password;
-   -n: Use numbers in password;
-   -s: Use symbols in password;
-   -S: Show default symbols character set;
-   -u: Use upper case letters in password;
-   -w: Use lower case and upper case letters in password;
+   -a: Use lowercase letters, uppercase letters, and numbers.
+   -h: Print this help text.
+   -l: Use lower case letters in password.
+   -m <symbols>: Use a custom set of symbols instead of the default.
+   -n: Use numbers in password.
+   -s: Use symbols in password.
+   -S: Show default symbols character set.
+   -u: Use upper case letters in password.
+   -w: Use lowercase and uppercase letters only.
 
 # Generate 12-character password (default: letters + numbers + symbols)
 ./pwg.sh 12             # Output: 3+pJ9.sP7{eE
@@ -222,9 +222,9 @@ Default Symbols Character Set:
 
 ## Version Information
 
-- **cipher.sh**: v202410.04
-- **hide.sh**: v202411.07
-- **pwg.sh**: v202504.03
+- **cipher.sh**: v202410.05
+- **hide.sh**: v202411.08
+- **pwg.sh**: v202504.04
 
 ## Use Cases
 

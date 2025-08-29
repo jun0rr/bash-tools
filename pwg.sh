@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="202504.03"
+VERSION="202504.04"
 
 function printHelp() {
 	echo "---------------------------------"
@@ -9,18 +9,18 @@ function printHelp() {
 	echo "       Author: Juno Roesler      "
 	echo "---------------------------------"
 	echo " Usage: pwg [-h | -S] | ([-a] [-l] [-m <symbols>] [-n] [-s] [-u] [-w]) <length>"
-	echo "   Each option can be provided multiple times to increase occurrence"
+	echo "   Each option can be repeated to increase the occurrence of its character type."
 	echo "   When no option is provided, the default is: '-l -n -s -u'"
 	echo " Options:"
-	echo "   -a: Use letters and numbers in password;"
-	echo "   -h: Print this help text;"
-	echo "   -l: Use lower case letters in password;"
-	echo "   -m <symbols>: Use custom set of symbols in password;"
-	echo "   -n: Use numbers in password;"
-	echo "   -s: Use symbols in password;"
-	echo "   -S: Show default symbols character set;"
-	echo "   -u: Use upper case letters in password;"
-	echo "   -w: Use lower case and upper case letters in password;"
+	echo "   -a: Use lowercase letters, uppercase letters, and numbers."
+	echo "   -h: Print this help text."
+	echo "   -l: Use lower case letters in password."
+	echo "   -m <symbols>: Use a custom set of symbols instead of the default."
+	echo "   -n: Use numbers in password."
+	echo "   -s: Use symbols in password."
+	echo "   -S: Show default symbols character set."
+	echo "   -u: Use upper case letters in password."
+	echo "   -w: Use lowercase and uppercase letters only."
 	echo " "
 }
 

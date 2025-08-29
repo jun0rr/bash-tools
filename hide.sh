@@ -43,7 +43,7 @@ function padLeft() {
 }
 
 
-VERSION="202411.07"
+VERSION="202411.08"
 
 function printHelp() {
 	padCenter 36 '-'
@@ -53,25 +53,25 @@ function printHelp() {
 	padCenter 36 '-'
 	line="Usage: hide.sh [-h | -v] | [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]"
     padLeft $((${#line}+1)) ' ' "$line"
-	line="When [input] is not provided, content is read from stdin"
+	line="When [input] is not provided, content is read from stdin."
     padLeft $((${#line}+3)) ' ' "$line"
 	line="Options:"
     padLeft $((${#line}+1)) ' ' "$line"
-    line="-e/--encrypt ...: Encrypt input script with random password"
+    line="-e/--encrypt ...: Encrypt input script with random password."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-h/--help ......: Print this help text"
+    line="-h/--help ......: Print this help text."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-i/--info ......: Print info of obfuscated content"
+    line="-i/--info ......: Print info of obfuscated content."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-n/--num .......: Number of iterations (default = 1)"
+    line="-n/--num .......: Number of iterations (default = 1)."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-o/--out .......: Output file (default = stdout)"
+    line="-o/--out .......: Output file (default = stdout)."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-s/--src .......: Call 'source' on script instead of executing"
+    line="-s/--src .......: Call 'source' on script instead of executing."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-u/--unhide ....: Unhide obfuscated content"
+    line="-u/--unhide ....: Unhide obfuscated content."
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-v/--version ...: Print version"
+    line="-v/--version ...: Print version."
     padLeft $((${#line}+3)) ' ' "$line"
 	echo ""
 }
