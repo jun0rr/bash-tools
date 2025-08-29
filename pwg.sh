@@ -8,7 +8,7 @@ function printHelp() {
 	echo "        Version: $VERSION        "
 	echo "       Author: Juno Roesler      "
 	echo "---------------------------------"
-	echo " Usage: pwg [-a] [-h] [-l] [-m <symbols>] [-n] [-s] [-S] [-u] [-w] <length>"
+	echo " Usage: pwg [-h | -S] | ([-a] [-l] [-m <symbols>] [-n] [-s] [-u] [-w]) <length>"
 	echo "   Each option can be provided multiple times to increase occurrence"
 	echo "   When no option is provided, the default is: '-l -n -s -u'"
 	echo " Options:"

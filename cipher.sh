@@ -51,7 +51,7 @@ function printHelp()  {
 	padCenter 38 ' ' "Version: $VERSION"
 	padCenter 38 ' ' "Author: Juno Roesler"
 	padCenter 38 '-'
-	line="Usage: cipher.sh <-e|-d|-g> <-k|-p <pass>> [file]"
+	line="cipher.sh [-h | -g] | (-e <-k | -p <pass>> | -d [-k] -p <pass>) [file]"
 	padLeft $((${#line}+2)) ' ' "$line"
 	line="Options:"
 	padLeft $((${#line}+2)) ' ' "$line"

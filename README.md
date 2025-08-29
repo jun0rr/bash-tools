@@ -26,7 +26,7 @@ Cipher.sh - Encryption/Decryption tool
           Version: 202410.04
          Author: Juno Roesler
 --------------------------------------
-  Usage: cipher.sh <-e|-d|-g> <-k|-p <pass>> [file]
+  Usage: cipher.sh [-h | -g] | (-e <-k | -p <pass>> | -d [-k] -p <pass>) [file]
   Options:
     -d/--dec ...: Decrypt file/stdin
     -e/--enc ...: Ecrypt file/stdin
@@ -74,16 +74,16 @@ Cipher.sh - Encryption/Decryption tool
 ------------------------------------
   HideSH - Bash Script Obfuscation
          Version: 202411.07
-      Author: F6036477 - Juno
+        Author: Juno Roesler
 ------------------------------------
- Usage: hide.sh [-h] [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]
-   When [input] is not provided, content is readed from stdin
+ Usage: hide.sh [-h | -v] | [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]
+   When [input] is not provided, content is read from stdin
  Options:
    -e/--encrypt ...: Encrypt input script with random password
    -h/--help ......: Print this help text
-   -i/--info ......: Print info of an obfuscated cotent
-   -n/--num .......: Number of iterations (default=1)
-   -o/--out .......: Output file (default stdout)
+   -i/--info ......: Print info of obfuscated content
+   -n/--num .......: Number of iterations (default = 1)
+   -o/--out .......: Output file (default = stdout)
    -s/--src .......: Call 'source' on script instead of executing
    -u/--unhide ....: Unhide obfuscated content
    -v/--version ...: Print version
@@ -128,7 +128,7 @@ Cipher.sh - Encryption/Decryption tool
         Version: 202504.03
        Author: Juno Roesler
 ---------------------------------
- Usage: pwg [-a] [-h] [-l] [-m <symbols>] [-n] [-s] [-S] [-u] [-w] <length>
+ Usage: pwg [-h | -S] | ([-a] [-l] [-m <symbols>] [-n] [-s] [-u] [-w]) <length>
    Each option can be provided multiple times to increase occurrence
    When no option is provided, the default is: '-l -n -s -u'
  Options:
@@ -222,9 +222,9 @@ Default Symbols Character Set:
 
 ## Version Information
 
-- **cipher.sh**: v202410.02
-- **hide.sh**: v202411.06  
-- **pwg.sh**: v202504.01
+- **cipher.sh**: v202410.04
+- **hide.sh**: v202411.07
+- **pwg.sh**: v202504.03
 
 ## Use Cases
 
@@ -253,7 +253,7 @@ Default Symbols Character Set:
 
 ## Author
 
-**Juno Roesler - juno.rr@gmail.com**
+**Juno Roesler \<<juno.rr@gmail.com>\>**
 
 ## License
 
