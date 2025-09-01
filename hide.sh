@@ -177,13 +177,13 @@ function encodeInput() {
 }
 
 function encryptInput() {
-        pname=$(openssl rand -base64 8 | sed 's/[=|\/|\+]//g')
-        pname='p'$pname
-        pass=$(openssl rand -base64 32 | sed 's/[=|\/|\+]//g')
-        epass=$(echo "$pname=$pass" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-        out=$out'eval $(echo "'$epass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
-        c=$(echo "$c" | openssl enc -aes-256-cbc -pbkdf2 -salt -pass "pass:$pass" | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-        out=$out'echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
+   pname=$(openssl rand -hex 8)
+   pname='p'$pname
+   pass=$(openssl rand -hex 32)
+   epass=$(echo "$pname=$pass" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+   out=$out'eval $(echo "'$epass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
+   c=$(echo "$c" | openssl enc -aes-256-cbc -pbkdf2 -salt -pass "pass:$pass" | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+   out=$out'echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
 }
 
 function formatOutput() {
@@ -202,32 +202,32 @@ function formatOutput() {
 }
 
 function decodeInput() {
-	parseInput
-	if [[ ! $c =~ ^eval.* && ! $c =~ ^#!/.+_NL_eval.* ]]; then
-		printHelp
-		echo "[ERROR] Input is not obfuscated"
-		exit 5
-	fi
-	c=$(echo "$c" | sed -E 's|^#!/.+_NL_||g')
-	while [[ $c =~ ^eval.+ ]]; do
-		c=$(echo $c | sed 's/eval $(echo "//g' | sed 's/".*//g')
-		c=$(echo $c | sed "s/ /\n/g" | base64 -d | gzip -d)
-		INFITE=$((INFITE+1))
-	done
-	# if is encrypted
-	if [[ $c =~ .*pass:$p.{8,11}.* ]]; then
-		# get password
-		pass=$(echo $c | sed -E 's/df=.*\$\(echo "//g' | sed -E 's|^([A-Za-z0-9/+=]{76}\s[A-Za-z0-9/+=]{15,28}).*|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p.{8,11}=//g')
-		# get encrypted content
-		c=$(echo $c | sed 's/^.*);echo //g' | sed -E 's|^("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g')
-		# decrypt content
-		c=$(echo $c | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$pass" | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
-		INFENC=1
-	else
-		c=$(echo $c | sed -E 's|^.+("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g' | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
-	fi
-	out="$c"
-	INFOLEN=$(echo -n "$out" | wc -c)
+    parseInput
+    if [[ ! $c =~ ^eval.* && ! $c =~ ^#!/.+_NL_eval.* ]]; then
+        printHelp
+        echo "[ERROR] Input is not obfuscated"
+        exit 5
+    fi
+    c=$(echo "$c" | sed -E 's|^#!/.+_NL_||g')
+    while [[ $c =~ ^eval.+ ]]; do
+        c=$(echo $c | sed 's/eval $(echo "//g' | sed 's/".*//g')
+        c=$(echo $c | sed "s/ /\n/g" | base64 -d | gzip -d)
+        INFITE=$((INFITE+1))
+    done
+    # if is encrypted
+    if [[ $c =~ .*pass:\$p[a-z0-9]{16}.* ]]; then
+        # get password
+        pass=$(echo $c | sed -E 's/df=.*\$\(echo "//g' | sed -E 's|^([A-Za-z0-9/+=]{76}\s[A-Za-z0-9/+=]{15,28}).*|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p[a-z0-9]{16}=//g')
+        # get encrypted content
+        c=$(echo $c | sed 's/^.*);echo //g' | sed -E 's|^("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g')
+        # decrypt content
+        c=$(echo $c | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$pass" | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
+        INFENC=1
+    else
+        c=$(echo $c | sed -E 's|^.+("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g' | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
+    fi
+    out="$c"
+    INFOLEN=$(echo -n "$out" | wc -c)
 }
 
 
