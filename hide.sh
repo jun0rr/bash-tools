@@ -5,24 +5,24 @@
 # {2} Padding char
 # {3} Text
 function padCenter() {
-        lineSize=$1
-        char="$2"
-        text="$3"
-        textLen=${#text}
-        size=$(($lineSize-$textLen))
-        sizeL=$(($size/2))
-        sizeR=$sizeL
-        if [ $(($sizeL*2)) -lt $size ]; then
-                sizeR=$(($sizeL+1))
-        fi
-        for ((i=0; i<sizeL; i++)); do
-                echo -n "$char"
-        done
-        echo -n "$text"
-        for ((i=0; i<sizeR; i++)); do
-                echo -n "$char"
-        done
-        echo ""
+    lineSize=$1
+    char="$2"
+    text="$3"
+    textLen=${#text}
+    size=$(($lineSize-$textLen))
+    sizeL=$(($size/2))
+    sizeR=$sizeL
+    if [ $(($sizeL*2)) -lt $size ]; then
+        sizeR=$(($sizeL+1))
+    fi
+    for ((i=0; i<sizeL; i++)); do
+        echo -n "$char"
+    done
+    echo -n "$text"
+    for ((i=0; i<sizeR; i++)); do
+        echo -n "$char"
+    done
+    echo ""
 }
 
 
@@ -31,15 +31,15 @@ function padCenter() {
 # {2} Padding char
 # {3} Text
 function padLeft() {
-        lineSize=$1
-        char="$2"
-        text="$3"
-        textLen=${#text}
-        size=$(($lineSize-$textLen))
-        for ((i=0; i<size; i++)); do
-                echo -n "$char"
-        done
-        echo "$text"
+    lineSize=$1
+    char="$2"
+    text="$3"
+    textLen=${#text}
+    size=$(($lineSize-$textLen))
+    for ((i=0; i<size; i++)); do
+        echo -n "$char"
+    done
+    echo "$text"
 }
 
 
@@ -49,29 +49,33 @@ function printHelp() {
 	padCenter 36 '-'
 	padCenter 36 ' ' 'HideSH - Bash Script Obfuscation'
 	padCenter 36 ' ' "Version: $VERSION"
-	padCenter 36 ' ' 'Author: F6036477 - Juno'
+	padCenter 36 ' ' 'Author: Juno Roesler'
 	padCenter 36 '-'
-	line="Usage: hide.sh [-h | -v] | [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]"
+	line="Usage: hide.sh [-h] [-o <file>] (-u [-p] | -i [-p] | [-n] [-e [-E | -p]] [-s]) [input]"
     padLeft $((${#line}+1)) ' ' "$line"
-	line="When [input] is not provided, content is read from stdin."
+	line="When [input] is not provided, content is readed from stdin"
     padLeft $((${#line}+3)) ' ' "$line"
 	line="Options:"
     padLeft $((${#line}+1)) ' ' "$line"
-    line="-e/--encrypt ...: Encrypt input script with random password."
+    line="-e/--encrypt ......: Encrypt input script with random password"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-h/--help ......: Print this help text."
+    line="-E/--env <var=file>: Use an environment file with var=password for encryption"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-i/--info ......: Print info of obfuscated content."
+    line="-h/--help .........: Print this help text"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-n/--num .......: Number of iterations (default = 1)."
+    line="-i/--info .........: Print info of an obfuscated cotent"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-o/--out .......: Output file (default = stdout)."
+    line="-n/--num ..........: Number of iterations (default=1)"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-s/--src .......: Call 'source' on script instead of executing."
+    line="-o/--out ..........: Output file (default stdout)"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-u/--unhide ....: Unhide obfuscated content."
+    line="-p/--pass <pwd>....: Use a custom password for encryption"
     padLeft $((${#line}+3)) ' ' "$line"
-    line="-v/--version ...: Print version."
+    line="-s/--src ..........: Call 'source' on script instead of executing it"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-u/--unhide .......: Unhide obfuscated content"
+    padLeft $((${#line}+3)) ' ' "$line"
+    line="-v/--version ......: Print version"
     padLeft $((${#line}+3)) ' ' "$line"
 	echo ""
 }
@@ -87,63 +91,79 @@ OPTS=0
 OPTE=0
 OPTU=0
 OPTI=0
+OPTP=0
+ARGP=""
+OPTENV=0
+ARGENV=""
 INPUT=""
 
 for ((i=0; i<olen; i++)); do
 	opt=${opts[i]}
-        case $opt in
-                -n | --num)
-                        OPTN=1
-                        if [ $i -ge $((${#opts[@]}-1)) ]; then
-                                printHelp
-                                echo "[ERROR] Number of iterations (-n) missing"
-                                exit 1
-                        fi
-                        i=$((i+1))
-                        ARGN=${opts[$i]}
-                        ;;
-                -e | --encrypt)
-                        OPTE=1
-                        ;;
-                -s | --src)
-                        OPTS=1
-                        ;;
-                -o | --out)
-                        OPTO=1
-                        if [ $i -ge $((${#opts[@]}-1)) ]; then
-                                printHelp
-                                echo "[ERROR] Output file (-o) not found"
-                                exit 2
-                        fi
-                        i=$((i+1))
-                        ARGO=${opts[$i]}
-                        ;;
-                -u | --unhide)
-                        OPTU=1
-                        ;;
-                -i | --info)
-                        OPTI=1
-                        ;;
-                -h | --help)
-                        printHelp
-                        exit 0
-                        ;;
-                -v | --version)
-                        echo "HideSH Version: $VERSION"
-                        exit 0
-                        ;;
-                *)
+	case $opt in
+		-n | --num)
+			OPTN=1
+            if [ $i -ge $((${#opts[@]}-1)) ]; then
+                printHelp
+                echo "[ERROR] Number of iterations (-n) missing"
+                exit 1
+            fi
+            i=$((i+1))
+            ARGN=${opts[$i]}
+            ;;
+        -e | --encrypt) OPTE=1;;
+        -E | --env)
+            OPTENV=1
+            if [ $i -ge $((${#opts[@]}-1)) ]; then
+                printHelp
+                echo "[ERROR] Enviroment variable name (-E) not found"
+                exit 2
+            fi
+            i=$((i+1))
+            ARGENV=${opts[$i]}
+            ;;
+        -s | --src) OPTS=1;;
+        -o | --out)
+            OPTO=1
+            if [ $i -ge $((${#opts[@]}-1)) ]; then
+                printHelp
+                echo "[ERROR] Output file (-o) not found"
+                exit 3
+            fi
+            i=$((i+1))
+            ARGO=${opts[$i]}
+            ;;
+        -p | --pass)
+            OPTP=1
+            if [ $i -ge $((${#opts[@]}-1)) ]; then
+                printHelp
+                echo "[ERROR] Password (-p) not found"
+                exit 4
+            fi
+            i=$((i+1))
+            ARGP=${opts[$i]}
+            ;;
+        -u | --unhide) OPTU=1;;
+        -i | --info) OPTI=1;;
+        -h | --help)
+            printHelp
+            exit 0
+            ;;
+        -v | --version)
+            echo "HideSH Version: $VERSION"
+            exit 0
+            ;;
+        *)
 			if [[ $opt =~ ^\-[a-z]$ || $opt =~ ^\-\-[a-z]+$ ]]; then
 				printHelp
-				echo "[ERROR] Unknown option: $opt"
-				exit 3
+			    echo "[ERROR] Unknown option: $opt"
+			    exit 3
 			elif [ -z "$INPUT" ]; then
 				INPUT="$opt"
 			else
-				INPUT="$INPUT $opt"
+			    INPUT="$INPUT $opt"
 			fi
-                        ;;
-        esac
+            ;;
+    esac
 done
 
 if [ $OPTU -eq 1 -a $((OPTN+OPTS+OPTE)) -gt 0 ]; then
@@ -153,18 +173,18 @@ if [ $OPTU -eq 1 -a $((OPTN+OPTS+OPTE)) -gt 0 ]; then
 fi
 
 function parseInput() {
-        if [ -e "$INPUT" ]; then
-                c=$(cat $INPUT | sed ':a;N;$!ba;s/\n/_NL_/g')
-        elif [ ! -z "$INPUT" ]; then
-                c=$(echo "$INPUT" | sed ':a;N;$!ba;s/\n/_NL_/g')
-        else
-                c=$(timeout 3s cat - | sed ':a;N;$!ba;s/\n/_NL_/g')
-                if [ -z "$c" ]; then
-                        printHelp
-                        echo "[ERROR] Nothig readed from stdin"
-                        exit 4
-                fi
+    if [ -e "$INPUT" ]; then
+        c=$(cat $INPUT | sed ':a;N;$!ba;s/\n/_NL_/g')
+    elif [ ! -z "$INPUT" ]; then
+        c=$(echo "$INPUT" | sed ':a;N;$!ba;s/\n/_NL_/g')
+    else
+        c=$(timeout 3s cat - | sed ':a;N;$!ba;s/\n/_NL_/g')
+        if [ -z "$c" ]; then
+        	printHelp
+            echo "[ERROR] Nothig readed from stdin"
+            exit 4
         fi
+    fi
 	INFILEN=$(echo -n "$c" | wc -c)
 }
 
@@ -177,57 +197,89 @@ function encodeInput() {
 }
 
 function encryptInput() {
-   pname=$(openssl rand -hex 8)
-   pname='p'$pname
-   pass=$(openssl rand -hex 32)
-   epass=$(echo "$pname=$pass" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-   out=$out'eval $(echo "'$epass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
-   c=$(echo "$c" | openssl enc -aes-256-cbc -pbkdf2 -salt -pass "pass:$pass" | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-   out=$out'echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
+    pname=$(openssl rand -hex 8)
+    pname='p'$pname
+	if [ $OPTP -eq 1 -a ! -z "$ARGP" ]; then
+		pass="$ARGP"
+		out=$out"read -p 'Password required: ' -s $pname;echo '';"
+	elif [ $OPTENV -eq 1 -a ! -z "$ARGENV" ]; then
+		name=$(echo "$ARGENV" | sed -E 's|^([a-zA-Z]+[a-zA-Z0-9_]+)=.+$|\1|')
+		file=$(echo "$ARGENV" | sed -E 's|^[a-zA-Z]+[a-zA-Z0-9_]=(.+)$|\1|')
+		if [ -z "$name" ]; then
+			printHelp
+			echo "[ERROR] Environment variable cannot be empty!"
+			exit 5
+		fi
+		if [ ! -e "$file" ]; then
+			printHelp
+			echo "[ERROR] Environment file does not exists: $file"
+			exit 5
+		fi
+		source $file
+		pass=$(eval 'echo $'$name)
+		callsrc=$(echo "source $file;" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+		out=$out'eval $(echo "'$callsrc'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
+		setpass=$(echo $pname'=$'$name | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+		out=$out'eval $(echo "'$setpass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
+	else
+    	pass=$(openssl rand -hex 32)
+    	epass=$(echo "$pname=$pass" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+    	out=$out'eval $(echo "'$epass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
+	fi
+    c=$(echo "$c" | openssl enc -aes-256-cbc -pbkdf2 -salt -pass "pass:$pass" | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+	out=$out';echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
 }
 
 function formatOutput() {
 	out=$out'chmod +x $df;'
-	#out=$out'echo "------ $df ------"; cat $df; echo "------ $df ------";'
 	if [ $OPTS -eq 1 ]; then
-        	out=$out'source $df;'
+       	out=$out'source $df;'
 	else
-        	out=$out'$df $@;'
+       	out=$out'$df $@;'
 	fi
 	out=$out'rm $df'
-	for ((i=0; i<ARGN; i++)); do
-        	out=$(echo "$out" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-	        out=$(echo 'eval $(echo "'$out'" | sed "s/ /\n/g" | base64 -d | gzip -d)')
+ 	for ((i=0; i<ARGN; i++)); do
+     	out=$(echo "$out" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
+        out=$(echo 'eval $(echo "'$out'" | sed "s/ /\n/g" | base64 -d | gzip -d)')
 	done
 }
 
 function decodeInput() {
-    parseInput
-    if [[ ! $c =~ ^eval.* && ! $c =~ ^#!/.+_NL_eval.* ]]; then
-        printHelp
-        echo "[ERROR] Input is not obfuscated"
-        exit 5
-    fi
-    c=$(echo "$c" | sed -E 's|^#!/.+_NL_||g')
-    while [[ $c =~ ^eval.+ ]]; do
-        c=$(echo $c | sed 's/eval $(echo "//g' | sed 's/".*//g')
-        c=$(echo $c | sed "s/ /\n/g" | base64 -d | gzip -d)
-        INFITE=$((INFITE+1))
-    done
-    # if is encrypted
-    if [[ $c =~ .*pass:\$p[a-z0-9]{16}.* ]]; then
-        # get password
-        pass=$(echo $c | sed -E 's/df=.*\$\(echo "//g' | sed -E 's|^([A-Za-z0-9/+=]{76}\s[A-Za-z0-9/+=]{15,28}).*|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p[a-z0-9]{16}=//g')
-        # get encrypted content
-        c=$(echo $c | sed 's/^.*);echo //g' | sed -E 's|^("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g')
-        # decrypt content
-        c=$(echo $c | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$pass" | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
-        INFENC=1
-    else
-        c=$(echo $c | sed -E 's|^.+("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g' | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
-    fi
-    out="$c"
-    INFOLEN=$(echo -n "$out" | wc -c)
+	parseInput
+	if [[ ! $c =~ ^eval.* && ! $c =~ ^#!/.+_NL_eval.* ]]; then
+		printHelp
+		echo "[ERROR] Input is not obfuscated"
+		exit 5
+	fi
+	c=$(echo "$c" | sed -E 's|^#!/.+_NL_||g')
+	while [[ $c =~ ^eval.+ ]]; do
+		c=$(echo $c | sed 's/eval $(echo "//g' | sed 's/".*//g')
+		c=$(echo $c | sed "s/ /\n/g" | base64 -d | gzip -d)
+		INFITE=$((INFITE+1))
+	done
+	# if is encrypted
+	if [[ $c =~ .*pass:\$p[a-z0-9]{16}.* ]]; then
+		# get password
+		if [[ $c =~ .*read\ -p.+ ]]; then
+			read -p 'Password required: ' -s pass;echo '' 
+		elif [[ $c =~ .*H4sIAAAAAAAA.+H4sIAAAAAAAA.+ ]]; then
+			src=$(echo $c | sed -E 's|^.*eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{45,55}).+;eval \$\(echo "H4sIAAAAAAAA.+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d)
+			eval $(echo "$src")
+			var=$(echo $c | sed -E 's|^.*eval \$\(echo "H4sIAAAAAAAA.+;eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{45,55}).+|\1|' | base64 -d | gzip -d | sed -E 's|^p[a-zA-Z0-9]{16}=\$(.+)|\1|')
+			eval $(echo 'pass=$'$var)
+		else
+			pass=$(echo $c | sed -E 's|^.+eval \$\(echo "(H4sIAAAAAAAA[A-Za-z0-9 /=+]{90,110})".+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p[a-z0-9]{16}=//g')
+		fi
+		# get encrypted content
+		c=$(echo $c | sed -E 's|.+;;echo "([A-Za-z0-9 /=+]+).+|\1|')
+		# decrypt content
+		c=$(echo $c | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$pass" | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
+		INFENC=1
+	else
+		c=$(echo $c | sed -E 's|^.+("[A-Za-z0-9/+=]+(\s[A-Za-z0-9/+=]+)+").*|\1|' | sed 's/"//g' | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
+	fi
+	out="$c"
+	INFOLEN=$(echo -n "$out" | wc -c)
 }
 
 
@@ -237,20 +289,20 @@ function decodeInput() {
 # $3 - Number of decimals
 # $r - Float number
 function divInt() {
-        num=$1
-        den=$2
-        ndc=$3
-        mul=1
-        for ((i=0; i<$ndc; i++)); do
-                mul=$mul"0"
-        done
-        num=$((num*mul))
-        int=$((num/den))
-        iln=${#int}
-        iln=$((iln-ndc))
-        dec=${int:$iln:$((iln+ndc))}
-        int=${int:0:$iln}
-        echo $int"."$dec
+    num=$1
+    den=$2
+    ndc=$3
+    mul=1
+    for ((i=0; i<$ndc; i++)); do
+        mul=$mul"0"
+    done
+    num=$((num*mul))
+    int=$((num/den))
+    iln=${#int}
+    iln=$((iln-ndc))
+    dec=${int:$iln:$((iln+ndc))}
+    int=${int:0:$iln}
+    echo $int"."$dec
 }
 
 
