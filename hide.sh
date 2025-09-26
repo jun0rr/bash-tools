@@ -263,9 +263,9 @@ function decodeInput() {
 		if [[ $c =~ .*read\ -p.+ ]]; then
 			read -p 'Password required: ' -s pass;echo '' 
 		elif [[ $c =~ .*H4sIAAAAAAAA.+H4sIAAAAAAAA.+ ]]; then
-			src=$(echo $c | sed -E 's|^.*eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{45,55}).+;eval \$\(echo "H4sIAAAAAAAA.+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d)
+			src=$(echo $c | sed -E 's|^.*eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{40,60}).+;eval \$\(echo "H4sIAAAAAAAA.+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d)
 			eval $(echo "$src")
-			var=$(echo $c | sed -E 's|^.*eval \$\(echo "H4sIAAAAAAAA.+;eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{45,55}).+|\1|' | base64 -d | gzip -d | sed -E 's|^p[a-zA-Z0-9]{16}=\$(.+)|\1|')
+			var=$(echo $c | sed -E 's|^.*eval \$\(echo "H4sIAAAAAAAA.+;eval \$\(echo "(H4sIAAAAAAAA[a-zA-Z0-9/=+]{40,60}).+|\1|' | base64 -d | gzip -d | sed -E 's|^p[a-zA-Z0-9]{16}=\$(.+)|\1|')
 			eval $(echo 'pass=$'$var)
 		else
 			pass=$(echo $c | sed -E 's|^.+eval \$\(echo "(H4sIAAAAAAAA[A-Za-z0-9 /=+]{90,110})".+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p[a-z0-9]{16}=//g')
@@ -341,7 +341,7 @@ elif [ $OPTI -eq 1 ]; then
 		INFENC="No"
 	fi
 	line="Encryption ...: $INFENC"
-    padLeft $((${#line}+4)) ' ' "$line"
+  padLeft $((${#line}+4)) ' ' "$line"
 	if [ $INFILEN -le $INFOLEN ]; then
 		size=$((INFOLEN-INFILEN))
 		size=$((size*100))
@@ -353,8 +353,8 @@ elif [ $OPTI -eq 1 ]; then
 		size=$(divInt $size $INFOLEN 1)
 		line="Size Diff ....: > $size%"
 	fi
-        padLeft $((${#line}+4)) ' ' "$line"
-	padCenter 36 '-'
+  padLeft $((${#line}+4)) ' ' "$line"
+  padCenter 36 '-'
 else
 	echo $out | sed 's/_NL_/\n/g'
 fi
