@@ -63,7 +63,7 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
 
 **Features**:
 - Multi-level obfuscation with configurable iterations
-- Optional AES encryption with random passwords
+- Optional AES encryption with random, custom or environment file passwords
 - Source mode for environment-modifying scripts
 - Reversible obfuscation with info display
 
@@ -76,23 +76,31 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
          Version: 202411.08
         Author: Juno Roesler
 ------------------------------------
- Usage: hide.sh [-h | -v] | [-o <file>] (-u | -i | [-n <num>] [-e] [-s]) [input]
-   When [input] is not provided, content is read from stdin.
+ Usage: hide.sh [-h] [-o <file>] (-u | -i | [-n] [-e [-E | -p]] [-s]) [input]
+   When [input] is not provided, content is readed from stdin
  Options:
-   -e/--encrypt ...: Encrypt input script with random password.
-   -h/--help ......: Print this help text.
-   -i/--info ......: Print info of obfuscated content.
-   -n/--num .......: Number of iterations (default = 1).
-   -o/--out .......: Output file (default = stdout).
-   -s/--src .......: Call 'source' on script instead of executing.
-   -u/--unhide ....: Unhide obfuscated content.
-   -v/--version ...: Print version.
+   -e/--encrypt ......: Encrypt input script with random password
+   -E/--env <var=file>: Use an environment file with var=password for encryption
+   -h/--help .........: Print this help text
+   -i/--info .........: Print info of an obfuscated cotent
+   -n/--num ..........: Number of iterations (default=1)
+   -o/--out ..........: Output file (default stdout)
+   -p/--pass <pwd>....: Use a custom password for encryption
+   -s/--src ..........: Call 'source' on script instead of executing it
+   -u/--unhide .......: Unhide obfuscated content
+   -v/--version ......: Print version
 
 # Basic obfuscation
 ./hide.sh script.sh
 
-# Advanced obfuscation with encryption
-./hide.sh -e -n 5 -o obfuscated.sh deploy.sh
+# Advanced obfuscation with encryption through embedded 256 bits password
+./hide.sh -n 5 -e -o obfuscated.sh deploy.sh
+
+# Encryption with custom password, it will be prompted at runtime (manual execution)
+./hide.sh -n 5 -e -p 'mypassword' -o obfuscated.sh deploy.sh
+
+# Encryption with environment file password
+./hide.sh -n 5 -e -E SECRET=/secure/.env -o obfuscated.sh deploy.sh
 
 # Unhide obfuscated content
 ./hide.sh -u obfuscated.sh
@@ -108,6 +116,74 @@ A collection of bash scripts for encryption, obfuscation, password generation, a
     Size Diff ....: > 11.9%
 ------------------------------------
 ```
+
+## Hide.sh Encryption Security Analysis
+
+The hide.sh tool offers three distinct encryption approaches, each with different security profiles and operational characteristics. Choose the approach that best fits your security requirements and operational constraints.
+
+### Encryption Approaches Comparison
+
+| Consideration | Auto-Generated | Custom Password | Environment File |
+|---------------|----------------|-----------------|------------------|
+| **🚀 Deployment Complexity** | ⭐⭐⭐⭐⭐ Trivial | ⭐⭐⭐⭐ Simple | ⭐⭐⭐ Moderate |
+| **👤 User Experience** | ⭐⭐⭐⭐⭐ Seamless | ⭐⭐⭐ Interactive prompt | ⭐⭐⭐⭐ Seamless (if env setup) |
+| **❌ Error Resistance** | ⭐⭐⭐⭐⭐ No user error | ⭐⭐ Typos possible | ⭐⭐⭐⭐ Automated |
+| **📈 Scalability** | ⭐⭐⭐⭐⭐ Perfect | ⭐⭐ Manual intervention | ⭐⭐⭐⭐⭐ Perfect |
+| **🤖 Automation Friendly** | ⭐⭐⭐⭐⭐ Fully automated | ⭐ Cannot run unattended | ⭐⭐⭐⭐⭐ Fully automated |
+| **🔄 CI/CD Integration** | ⭐⭐⭐⭐⭐ Perfect for pipelines | ⭐ Blocks automation | ⭐⭐⭐⭐⭐ Perfect for pipelines |
+| **📦 Distribution Simplicity** | ⭐⭐⭐⭐⭐ Single file | ⭐⭐⭐⭐⭐ Single file | ⭐⭐⭐ Two files required |
+| **🔧 Maintenance Overhead** | ⭐⭐⭐⭐⭐ Zero maintenance | ⭐⭐⭐⭐ Password management | ⭐⭐⭐ Environment file management |
+| **🛡️ Static Analysis Resistance** | ⭐⭐ Password extractable | ⭐⭐⭐⭐⭐ No password stored | ⭐⭐⭐⭐⭐ No password in script |
+| **🔐 Key Separation Security** | ⭐ No separation | ⭐⭐⭐⭐⭐ Interactive separation | ⭐⭐⭐⭐⭐ File separation |
+| **🎯 Targeted Attack Resistance** | ⭐⭐ Single point of failure | ⭐⭐⭐⭐ Requires password knowledge | ⭐⭐⭐⭐ Requires file access |
+| **🔍 Social Engineering Resistance** | ⭐⭐⭐⭐⭐ Nothing to engineer | ⭐⭐ Password can be shared | ⭐⭐⭐ Environment access |
+| **👀 Shoulder Surfing Resistance** | ⭐⭐⭐⭐⭐ No typing required | ⭐⭐ Password visible during entry | ⭐⭐⭐⭐⭐ No typing required |
+| **🔄 Credential Rotation** | ⭐ Requires re-obfuscation | ⭐⭐⭐⭐⭐ Change password anytime | ⭐⭐⭐⭐⭐ Update env file |
+| **📋 Audit & Compliance** | ⭐⭐ Poor key management | ⭐⭐⭐ Interactive logging | ⭐⭐⭐⭐⭐ Excellent separation |
+| **🧠 Memory Security** | ⭐⭐ Password always resident | ⭐⭐⭐⭐ Runtime only | ⭐⭐⭐⭐ Runtime only |
+| **💪 Cryptographic Strength** | ⭐⭐⭐⭐⭐ 256-bit entropy | ⭐⭐⭐ Depends on user choice | ⭐⭐⭐⭐ Depends on env management |
+
+### Security Tiers
+
+#### 🥇 Tier 1: High Security
+- **Custom Password**: Interactive authentication barrier requiring password knowledge
+- **Environment File**: Cryptographic key separation with file-based security
+
+#### 🥈 Tier 2: Moderate Security  
+- **Auto-Generated**: Strong cryptography but vulnerable to static analysis
+
+### Recommended Use Cases
+
+| Use Case | Recommended Approach | Rationale |
+|----------|---------------------|-----------|
+| **Production Deployments** | Environment File | Best security + automation compatibility |
+| **Development Scripts** | Auto-Generated | Simplicity + adequate security |
+| **Administrative Tools** | Custom Password | Human verification + audit trail |
+| **CI/CD Pipelines** | Environment File | Automation + credential separation |
+| **Quick Prototyping** | Auto-Generated | Zero configuration overhead |
+| **Team Collaboration** | Custom Password | Shared knowledge authentication |
+| **Compliance Environments** | Environment File | Proper key management practices |
+| **Personal Utilities** | Auto-Generated | Convenience prioritized |
+
+### Security Analysis Summary
+
+**Auto-Generated Approach:**
+- ✅ Perfect for automation and simplicity
+- ❌ Single point of failure - password embedded in script
+- ⚠️ Vulnerable to determined attackers with static analysis
+
+**Custom Password Approach:**
+- ✅ Interactive security barrier with no stored credentials
+- ✅ Human-controlled authentication factor
+- ❌ Cannot run unattended, blocks automation
+
+**Environment File Approach:**
+- ✅ Proper cryptographic key separation
+- ✅ Enterprise-grade security practices
+- ✅ Automation-friendly with credential management
+- ⚠️ Slightly more complex deployment
+
+**Recommendation:** Use Environment File approach for production systems requiring high security, Auto-Generated for development convenience, and Custom Password for administrative tools requiring human verification.
 
 ### 🔑 pwg.sh - Password Generator
 **Purpose**: Generate cryptographically secure random passwords with customizable character sets.

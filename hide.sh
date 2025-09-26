@@ -292,17 +292,14 @@ function divInt() {
     num=$1
     den=$2
     ndc=$3
-    mul=1
-    for ((i=0; i<$ndc; i++)); do
-        mul=$mul"0"
-    done
-    num=$((num*mul))
-    int=$((num/den))
-    iln=${#int}
-    iln=$((iln-ndc))
-    dec=${int:$iln:$((iln+ndc))}
-    int=${int:0:$iln}
-    echo $int"."$dec
+    # Multiply by 10^ndc for precision
+    multiplier=$((10**ndc))
+    result=$((num * multiplier / den))
+    # Split into integer and decimal parts
+    int_part=$((result / multiplier))
+    dec_part=$((result % multiplier))
+    # Format decimal part with leading zeros if needed
+    printf "%d.%0*d\n" $int_part $ndc $dec_part
 }
 
 
