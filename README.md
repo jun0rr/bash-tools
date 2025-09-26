@@ -124,10 +124,9 @@ The hide.sh tool offers three distinct encryption approaches, each with differen
 ### Encryption Approaches Comparison
 
 | Consideration | Auto-Generated | Custom Password | Environment File |
-|---------------|----------------|------------------|-----------------|
+|---------------|----------------|-----------------|------------------|
 | **🚀 Deployment Complexity** | ⭐⭐⭐⭐⭐ Trivial | ⭐⭐⭐⭐ Simple | ⭐⭐⭐ Moderate |
 | **👤 User Experience** | ⭐⭐⭐⭐⭐ Seamless | ⭐⭐⭐ Interactive prompt | ⭐⭐⭐⭐ Seamless (if env setup) |
-| **❌ Error Resistance** | ⭐⭐⭐⭐⭐ No user error | ⭐⭐ Typos possible | ⭐⭐⭐⭐ Automated |
 | **📈 Scalability** | ⭐⭐⭐⭐⭐ Perfect | ⭐⭐ Manual intervention | ⭐⭐⭐⭐⭐ Perfect |
 | **🤖 Automation Friendly** | ⭐⭐⭐⭐⭐ Fully automated | ⭐ Cannot run unattended | ⭐⭐⭐⭐⭐ Fully automated |
 | **🔄 CI/CD Integration** | ⭐⭐⭐⭐⭐ Perfect for pipelines | ⭐ Blocks automation | ⭐⭐⭐⭐⭐ Perfect for pipelines |
@@ -137,9 +136,6 @@ The hide.sh tool offers three distinct encryption approaches, each with differen
 | **🔐 Key Separation Security** | ⭐ No separation | ⭐⭐⭐⭐⭐ Interactive separation | ⭐⭐⭐⭐⭐ File separation |
 | **🎯 Targeted Attack Resistance** | ⭐⭐ Single point of failure | ⭐⭐⭐⭐ Requires password knowledge | ⭐⭐⭐⭐ Requires file access |
 | **🔍 Social Engineering Resistance** | ⭐⭐⭐⭐⭐ Nothing to engineer | ⭐⭐ Password can be shared | ⭐⭐⭐ Environment access |
-| **👀 Shoulder Surfing Resistance** | ⭐⭐⭐⭐⭐ No typing required | ⭐⭐ Password visible during entry | ⭐⭐⭐⭐⭐ No typing required |
-| **🔄 Credential Rotation** | ⭐ Requires re-obfuscation | ⭐⭐⭐⭐⭐ Change password anytime | ⭐⭐⭐⭐⭐ Update env file |
-| **📋 Audit & Compliance** | ⭐⭐ Poor key management | ⭐⭐⭐ Interactive logging | ⭐⭐⭐⭐⭐ Excellent separation |
 | **🧠 Memory Security** | ⭐⭐ Password always resident | ⭐⭐⭐⭐ Runtime only | ⭐⭐⭐⭐ Runtime only |
 | **💪 Cryptographic Strength** | ⭐⭐⭐⭐⭐ 256-bit entropy | ⭐⭐⭐ Depends on user choice | ⭐⭐⭐⭐ Depends on env management |
 
@@ -184,6 +180,7 @@ The hide.sh tool offers three distinct encryption approaches, each with differen
 - ⚠️ Slightly more complex deployment
 
 **Recommendation:** Use Environment File approach for production systems requiring high security, Auto-Generated for development convenience, and Custom Password for administrative tools requiring human verification.
+
 
 ### 🔑 pwg.sh - Password Generator
 **Purpose**: Generate cryptographically secure random passwords with customizable character sets.

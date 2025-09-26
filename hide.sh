@@ -51,7 +51,7 @@ function printHelp() {
 	padCenter 36 ' ' "Version: $VERSION"
 	padCenter 36 ' ' 'Author: Juno Roesler'
 	padCenter 36 '-'
-	line="Usage: hide.sh [-h] [-o <file>] (-u [-p] | -i [-p] | [-n] [-e [-E | -p]] [-s]) [input]"
+	line="Usage: hide.sh [-h] [-o <file>] (-u | -i | [-n] [-e [-E | -p]] [-s]) [input]"
     padLeft $((${#line}+1)) ' ' "$line"
 	line="When [input] is not provided, content is readed from stdin"
     padLeft $((${#line}+3)) ' ' "$line"
