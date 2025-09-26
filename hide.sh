@@ -215,6 +215,7 @@ function encryptInput() {
 			echo "[ERROR] Environment file does not exists: $file"
 			exit 5
 		fi
+    file=$(realpath "$file")
 		source $file
 		pass=$(eval 'echo $'$name)
 		callsrc=$(echo "source $file;" | gzip | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
@@ -227,7 +228,7 @@ function encryptInput() {
     	out=$out'eval $(echo "'$epass'" | sed "s/ /\n/g" | base64 -d | gzip -d);'
 	fi
     c=$(echo "$c" | openssl enc -aes-256-cbc -pbkdf2 -salt -pass "pass:$pass" | base64 | tr '\n' ' ' | sed -r 's/\s$//g')
-	out=$out';echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
+	out=$out'$_x;echo "'$c'" | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$'$pname'" | sed "s/ /\n/g" | base64 -d | gzip -d > $df;'
 }
 
 function formatOutput() {
@@ -271,7 +272,7 @@ function decodeInput() {
 			pass=$(echo $c | sed -E 's|^.+eval \$\(echo "(H4sIAAAAAAAA[A-Za-z0-9 /=+]{90,110})".+|\1|' | sed "s/ /\n/g" | base64 -d | gzip -d | sed -E 's/^p[a-z0-9]{16}=//g')
 		fi
 		# get encrypted content
-		c=$(echo $c | sed -E 's|.+;;echo "([A-Za-z0-9 /=+]+).+|\1|')
+		c=$(echo $c | sed -E 's|.+;\$_x;echo "([A-Za-z0-9 /=+]+).+|\1|')
 		# decrypt content
 		c=$(echo $c | sed "s/ /\n/g" | base64 -d | openssl enc -d -aes-256-cbc -pbkdf2 -pass "pass:$pass" | sed "s/ /\n/g" | base64 -d | gzip -d | sed ':a;N;$!ba;s/\n/_NL_/g')
 		INFENC=1
